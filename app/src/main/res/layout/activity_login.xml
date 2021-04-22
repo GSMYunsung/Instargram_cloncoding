@@ -49,6 +49,7 @@
                 android:layout_height="wrap_content">
 
                 <com.google.android.material.textfield.TextInputEditText
+                    android:inputType="textPassword"
                     android:id="@+id/password_edittext"
                     android:hint="@string/password"
                     android:layout_width="match_parent"
@@ -86,6 +87,7 @@
                 android:layout_height="40dp"/>
 
             <Button
+                android:id="@+id/google_sing_in_button"
                 android:textColor="@color/white"
                 android:background="@drawable/btn_signin_google"
                 android:text="@string/signin_google"
