@@ -43,7 +43,7 @@ class LoginActivity : AppCompatActivity() {
         //구글 로그인 인증 토큰
 
         var gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id)) // 아이디 인증토
+                .requestIdToken(getString(R.string.default_web_client_id)) // 아이디 인증토큰
                 .requestEmail() // 이메일을 받아올 수 있도록 해줌
                 .build()
         googleSignInClient = GoogleSignIn.getClient(this,gso)
@@ -62,7 +62,7 @@ class LoginActivity : AppCompatActivity() {
             if (result != null) { //null감
                 if(result.isSuccess){
                     var account = result.signInAccount
-                    //FirebaseAuth <- 여기부터
+                    //FirebaseAuth <- 여기부터 파이어베ㅅ이
                 }
 
             }
