@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "513261667227",
+    "project_id": "instargram-cloncoding",
+    "storage_bucket": "instargram-cloncoding.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:513261667227:android:d60c621e8fb65287bc573e",
+        "android_client_info": {
+          "package_name": "com.example.instargram_cloncoding"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "513261667227-s0ov8f476ihvl0pfbbjq5ijt9vcgjvhc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtQkJeoRiP6G5VzS4bhP5ARoEpNi1fkXA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "513261667227-s0ov8f476ihvl0pfbbjq5ijt9vcgjvhc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
