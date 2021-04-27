@@ -5,7 +5,9 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
+import androidx.databinding.DataBindingUtil
 import com.example.instargram_cloncoding.R
 import com.example.instargram_cloncoding.databinding.ActivityAddPhotoBinding
 import com.example.instargram_cloncoding.databinding.ActivityMainBinding
@@ -14,6 +16,9 @@ import com.google.firebase.storage.FirebaseStorage
 import java.text.SimpleDateFormat
 import java.util.*
 
+
+//만약 오류가 생긴다면 파이어베이스 스토리지 버전을 업그레이드 해야한다.
+
 class AddPhotoActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddPhotoBinding
     var PICK_IMAGE_FROM_ALBUM = 0
@@ -21,12 +26,12 @@ class AddPhotoActivity : AppCompatActivity() {
     var photoUri: Uri? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_photo)
 
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_add_photo)
         //Initiate storge
         storage = FirebaseStorage.getInstance()
 
-        //엑티비티를 실행하자마자 오픈하게 해주는 코드
+        //엑티비티를 실행하자마자 카메라 엘범 오픈하게 해주는 코드
         var photoPickerIntent = Intent(Intent.ACTION_PICK)
         photoPickerIntent.type = "image/*"
         startActivityForResult(photoPickerIntent, PICK_IMAGE_FROM_ALBUM)
@@ -40,9 +45,11 @@ class AddPhotoActivity : AppCompatActivity() {
     //선택한 이미지를 받는 부분
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == PICK_IMAGE_FROM_ALBUM) {
             if (resultCode == Activity.RESULT_OK) {
                 //사진을 선택했을때 사진의 경로 넘어오는 부분
                 photoUri = data?.data
+                Log.d("uri",photoUri.toString())
                 //이미지뷰에다가 자신이 선택한 사진을 보여준다.
                 binding.addphotoImage.setImageURI(photoUri)
             } else {
@@ -50,6 +57,7 @@ class AddPhotoActivity : AppCompatActivity() {
                 //그냥 엑티비티를 닫는다.
                 finish()
             }
+        }
     }
 
     fun contentUpload() {
