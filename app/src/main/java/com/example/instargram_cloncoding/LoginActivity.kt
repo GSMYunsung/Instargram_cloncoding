@@ -50,6 +50,7 @@ class LoginActivity : AppCompatActivity() {
        binding.emailLoginButton.setOnClickListener {
            //구글 로그인 순서 첫번
            //(1)
+           Log.d("su","값이 들어옴")
             singin_sunginup()
         }
         binding.googleSingInButton.setOnClickListener {
@@ -171,21 +172,21 @@ class LoginActivity : AppCompatActivity() {
     }
     //Hash값 뽑기
     //Hash값을 페이스북에 넣어주기
-    fun printHashKey() {
-        try {
-            val info = packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
-            for (signature in info.signatures) {
-                val md: MessageDigest = MessageDigest.getInstance("SHA")
-                md.update(signature.toByteArray())
-                val hashKey: String = String(Base64.encode(md.digest(), 0))
-                Log.i("TAG", "printHashKey() Hash Key: $hashKey")
-            }
-        } catch (e: NoSuchAlgorithmException) {
-            Log.e("TAG", "printHashKey()", e)
-        } catch (e: Exception) {
-            Log.e("TAG", "printHashKey()", e)
-        }
-    }
+//    fun printHashKey() {
+//        try {
+//            val info = packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
+//            for (signature in info.signatures) {
+//                val md: MessageDigest = MessageDigest.getInstance("SHA")
+//                md.update(signature.toByteArray())
+//                val hashKey: String = String(Base64.encode(md.digest(), 0))
+//                Log.i("TAG", "printHashKey() Hash Key: $hashKey")
+//            }
+//        } catch (e: NoSuchAlgorithmException) {
+//            Log.e("TAG", "printHashKey()", e)
+//        } catch (e: Exception) {
+//            Log.e("TAG", "printHashKey()", e)
+//        }
+//    }
 
     //로그인을 할시에 실행할 실행 코드
     fun signinEmail(){
