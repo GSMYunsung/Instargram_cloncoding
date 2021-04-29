@@ -3,6 +3,7 @@
     package="com.example.instargram_cloncoding">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <!--스토리지 사용권한-->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
