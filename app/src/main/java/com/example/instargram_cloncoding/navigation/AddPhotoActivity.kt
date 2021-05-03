@@ -3,29 +3,20 @@ package com.example.instargram_cloncoding.navigation
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.example.instargram_cloncoding.R
 import com.example.instargram_cloncoding.databinding.ActivityAddPhotoBinding
-import com.example.instargram_cloncoding.databinding.ActivityMainBinding
-import com.example.instargram_cloncoding.navigation.DataModle.ContentDTO
-import com.google.android.gms.common.internal.Objects
+import com.example.instargram_cloncoding.navigation.DataModle.ContentDTOs
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
-import java.lang.Character.toString
-import java.net.URI
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.Arrays.toString
-import kotlin.Unit.toString
-import kotlin.coroutines.EmptyCoroutineContext.toString
-import kotlin.time.TimeSource.Monotonic.toString
 
 
 //만약 오류가 생긴다면 파이어베이스 스토리지 버전을 업그레이드 해야한다.
@@ -87,10 +78,10 @@ class AddPhotoActivity : AppCompatActivity() {
         storageRef?.putFile(photoUri!!)?.continueWithTask{task : Task<UploadTask.TaskSnapshot> ->
             return@continueWithTask storageRef.downloadUrl
         }?.addOnSuccessListener { uri ->  //이미지 주소를 받아오자마자 데이터 모델을 만들어준다
-            var contentDTO = ContentDTO()
+            var contentDTO = ContentDTOs()
 
             //Insert downloadUrl of image
-            contentDTO.imageUri = uri.toString()
+            contentDTO.imageUrl = uri.toString()
 
             //Insert uid of user 유저의 사진정보를 유저변수에 넣어준다.
             contentDTO.uid = auth?.currentUser?.uid
@@ -99,10 +90,10 @@ class AddPhotoActivity : AppCompatActivity() {
             contentDTO.userId = auth?.currentUser?.email
 
             //Insert explain of content // 사용자가 썻던 설명을 넣어준다
-            contentDTO.exception = binding.addphotoEditExplain.text.toString()
+            contentDTO.explain = binding.addphotoEditExplain.text.toString()
 
             //Insert timestamp
-            contentDTO.timestemp = System.currentTimeMillis()
+            contentDTO.timestamp = System.currentTimeMillis()
 
             //이미지 컬렉션안에 contentDTO객체의 정보를 모두 업로드한다.
             firestore?.collection("images")?.document()?.set(contentDTO)
