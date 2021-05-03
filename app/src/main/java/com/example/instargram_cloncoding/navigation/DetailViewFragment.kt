@@ -109,7 +109,7 @@ class DetailViewFragment : Fragment(){
         }
         fun favoriteEvent(position: Int){
             var tsDoc = firestore?.collection("images")?.document(contentUIDList[position])
-            //데이터 가져오기위한 코
+            //데이터 가져오기위한 코드
             firestore?.runTransaction{transition ->
 
                 uid = FirebaseAuth.getInstance().currentUser?.uid
