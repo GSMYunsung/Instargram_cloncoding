@@ -6,22 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.instargram_cloncoding.R
-import com.example.instargram_cloncoding.databinding.ItemDetailBinding
 import com.example.instargram_cloncoding.navigation.DataModle.ContentDTOs
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 //파이어베이스가 와이파이 문제도 포함되어있나보다.. 맥만..?
 //값을 전달해주는 파라미터에도 접근하지 못할뿐더러 그 과정을 실행을못해 프레그먼트도 연결이 안되는 현상이 발견!
-
-
-private lateinit var binding : ItemDetailBinding
 
 var uid : String? = null
 
@@ -31,7 +26,6 @@ class DetailViewFragment : Fragment(){
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-        binding = DataBindingUtil.inflate(inflater,R.layout.item_detail,container,false)
         var view = LayoutInflater.from(activity).inflate(R.layout.fragment_detail,container,false)//프레그먼트 레이아웃 받아오는 부분
         firestore = FirebaseFirestore.getInstance()
 
