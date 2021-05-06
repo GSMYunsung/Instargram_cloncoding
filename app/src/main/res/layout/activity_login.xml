@@ -15,8 +15,8 @@
         <!--TextInputLayout은 TextInputEditText 와 같이쓰고 textInputEditText에 효과를 부여할 수 있다.-->
 
         <ImageView
-            android:layout_above="@id/signin_layout"
             android:layout_alignParentTop="true"
+            android:layout_above="@id/signin_layout"
             android:layout_width="match_parent"
             android:src="@drawable/logo_title"
             android:layout_height="wrap_content"/>
