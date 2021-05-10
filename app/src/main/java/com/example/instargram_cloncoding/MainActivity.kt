@@ -4,6 +4,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -11,12 +14,14 @@ import androidx.databinding.DataBindingUtil
 import com.example.instargram_cloncoding.databinding.ActivityMainBinding
 import com.example.instargram_cloncoding.navigation.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var binding : ActivityMainBinding
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        setToolbarDefault()
         when(item.itemId){
             R.id.action_home ->{
                 var detailViewFragment = DetailViewFragment()
@@ -24,8 +29,13 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 return true
             }
             R.id.action_account ->{
-                var gridFragment = GridFragment()
-                supportFragmentManager.beginTransaction().replace(R.id.main_content,gridFragment).commit()
+                var userframgnet = UserFragment()
+                var bundle = Bundle()
+                //유저 정보 받아오기
+                var uid = FirebaseAuth.getInstance().currentUser.uid
+                bundle.putString("destinationUid",uid)
+                userframgnet.arguments = bundle
+                supportFragmentManager.beginTransaction().replace(R.id.main_content,userframgnet).commit()
                 return true
             }
             R.id.action_add_photo ->{
@@ -40,12 +50,17 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 return true
             }
             R.id.action_search ->{
-                var userframgnet = UserFragment()
-                supportFragmentManager.beginTransaction().replace(R.id.main_content,userframgnet).commit()
+                var gridFragment = GridFragment()
+                supportFragmentManager.beginTransaction().replace(R.id.main_content,gridFragment).commit()
                 return true
             }
         }
         return false
+    }
+    fun setToolbarDefault(){
+        findViewById<TextView>(R.id.toolbar_user_name).visibility = View.GONE
+        findViewById<ImageView>(R.id.toolbar_btn_back).visibility = View.GONE
+        findViewById<ImageView>(R.id.toolbar_title_image).visibility = View.VISIBLE
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

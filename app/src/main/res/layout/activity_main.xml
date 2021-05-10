@@ -17,8 +17,24 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-
                 <ImageView
+                    android:id="@+id/toolbar_btn_back"
+                    android:src="@drawable/ic_arrow_back"
+                    android:layout_alignParentLeft="true"
+                    android:layout_width="30dp"
+                    android:layout_height="52dp"/>
+                <TextView
+                    android:id="@+id/toolbar_user_name"
+                    android:layout_toRightOf="@+id/toolbar_btn_back"
+                    android:textStyle="bold"
+                    android:gravity="center_vertical"
+                    android:text="UserID"
+                    android:textSize="16dp"
+                    android:textColor="@color/colorNavIcon"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+                <ImageView
+                    android:id="@+id/toolbar_title_image"
                     android:src="@drawable/logo_title"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"/>
