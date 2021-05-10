@@ -1,10 +1,7 @@
 package com.example.instargram_cloncoding
 
 import android.content.Intent
-import android.content.pm.PackageInfo
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -21,11 +18,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.firebase.auth.*
-import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
+import com.google.firebase.auth.FacebookAuthProvider
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.GoogleAuthProvider
 import java.util.*
-import javax.security.auth.callback.Callback
 
 
 //이메일 로그인 : 이메일을 요청하게되면 파이어베이스에서 요청하는 두단계 구조
@@ -170,6 +167,12 @@ class LoginActivity : AppCompatActivity() {
                     }
         }
     }
+
+    override fun onStart() {
+        super.onStart()
+        moveMainPage(auth?.currentUser)
+    }
+
     //Hash값 뽑기
     //Hash값을 페이스북에 넣어주기
 //    fun printHashKey() {
@@ -208,6 +211,7 @@ class LoginActivity : AppCompatActivity() {
         //파이어베이스에 유저 정보를 넘겨주고 메인화면으로 넘겨는 코드
         if(user != null){
             startActivity(Intent(this, MainActivity::class.java))
+            finish()
         }
     }
 }
