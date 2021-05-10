@@ -48,7 +48,7 @@ class DetailViewFragment : Fragment(){
             firestore?.collection("images")?.orderBy("timestamp")?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
                 contentDTOs.clear()
                 contentUIDList.clear()
-
+                if(querySnapshot == null) return@addSnapshotListener
                 for(snapshot in querySnapshot!!.documents){
                     var item = snapshot.toObject(ContentDTOs::class.java)
                     contentDTOs.add(item!!)
@@ -95,6 +95,14 @@ class DetailViewFragment : Fragment(){
             {
                 //클릭이 되지 않은 부분
                 viewholder.findViewById<ImageView>(R.id.detailviewitem_favorite_imageview).setImageResource(R.drawable.ic_favorite_border)
+            }
+            viewholder.findViewById<ImageView>(R.id.detailviewitem_profile_image).setOnClickListener {
+                var userfragment = UserFragment()
+                var bundle = Bundle()
+                bundle.putString("destinationUid", contentDTOs[position].uid)
+                bundle.putString("userId", contentDTOs[position].userId)
+                userfragment.arguments = bundle
+                activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.main_content,userfragment)?.commit()
             }
         }
         //RecyclerView로 만들어지는 item의 총 개수를 반환한다.
