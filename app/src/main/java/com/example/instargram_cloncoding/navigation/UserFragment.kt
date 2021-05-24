@@ -29,6 +29,9 @@ class UserFragment : Fragment() {
     var auth : FirebaseAuth? = null
     var curruntUserUid : String? = null
 
+    companion object{
+        var PICK_PROFILE_FROM_ALBUM = 10
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         fragmentView = LayoutInflater.from(activity).inflate(R.layout.fragment_user, container, false) //프레그먼트 레이아웃 받아오기
@@ -66,7 +69,32 @@ class UserFragment : Fragment() {
         //한 행에 세개씩 뜰 수 있도록!
         fragmentView?.findViewById<RecyclerView>(R.id.account_recyclerview)?.layoutManager = GridLayoutManager(activity!!,3)
         //fragmentView?.findViewById<LinearLayout>(R.id.content_iv_profile)
+
+
+        //프로필 사진 올리는부분
+        if(uid == curruntUserUid)
+        {
+            fragmentView?.findViewById<ImageView>(R.id.content_iv_profile)?.setOnClickListener {
+                var photoPickerIntent = Intent(Intent.ACTION_PICK)
+                photoPickerIntent.type = "image/*"
+                activity?.startActivityForResult(photoPickerIntent,PICK_PROFILE_FROM_ALBUM)
+            }
+            getProfileImage()
+        }
         return fragmentView
+    }
+    fun requestFollow(){
+        //나의 계정 :
+    }
+    fun getProfileImage(){
+        firestore?.collection("profileImages")?.document(uid!!)?.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
+            if(documentSnapshot == null) return@addSnapshotListener
+            if(documentSnapshot.data != null){
+                //이미지 주소를 불러오고, 이미지를 로딩한다!
+                var url = documentSnapshot?.data!!["image"]
+                Glide.with(activity!!).load(url).apply(RequestOptions().circleCrop()).into(fragmentView?.findViewById(R.id.content_iv_profile)!!)
+            }
+        }
     }
 
     inner class UserFragmentRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
