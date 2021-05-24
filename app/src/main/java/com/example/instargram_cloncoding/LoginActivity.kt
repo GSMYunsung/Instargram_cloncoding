@@ -120,7 +120,6 @@ class LoginActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
             callbackManager?.onActivityResult(requestCode,resultCode,data) // 콜백 결과값
             var result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)//구글에서 넘겨주는 결과값 저장
-            Log.w("result", result.toString())
             if (result != null) {
                 if(result.isSuccess){
                     var account = result.signInAccount
