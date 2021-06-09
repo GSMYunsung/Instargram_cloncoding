@@ -1,13 +1,16 @@
 package com.example.instargram_cloncoding.navigation
 
 import android.content.Intent
+import android.graphics.PorterDuff
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,10 +20,12 @@ import com.example.instargram_cloncoding.LoginActivity
 import com.example.instargram_cloncoding.MainActivity
 import com.example.instargram_cloncoding.R
 import com.example.instargram_cloncoding.navigation.DataModle.ContentDTOs
+import com.example.instargram_cloncoding.navigation.DataModle.FollowDTO
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
+@Suppress("DEPRECATION")
 class UserFragment : Fragment() {
 
     var fragmentView : View? = null
@@ -62,6 +67,9 @@ class UserFragment : Fragment() {
             mainactivity?.findViewById<ImageView>(R.id.toolbar_title_image)?.visibility = View.GONE
             mainactivity?.findViewById<TextView>(R.id.toolbar_user_name)?.visibility = View.VISIBLE
             mainactivity?.findViewById<ImageView>(R.id.toolbar_btn_back)?.visibility = View.VISIBLE
+            fragmentView?.findViewById<Button>(R.id.account_btn_follow_signout)?.setOnClickListener {
+                requestFollow()
+            }
         }
 
 
@@ -80,11 +88,113 @@ class UserFragment : Fragment() {
                 activity?.startActivityForResult(photoPickerIntent,PICK_PROFILE_FROM_ALBUM)
             }
             getProfileImage()
+            getFollowerAndFollowing()
         }
         return fragmentView
     }
+
+    fun getFollowerAndFollowing(){
+        firestore?.collection("users")?.document(uid!!)?.addSnapshotListener{documentSnapshot, firebaseFirestoreException ->
+            if(documentSnapshot == null) return@addSnapshotListener
+            var followDTO = documentSnapshot.toObject(FollowDTO::class.java)
+            if(followDTO?.followerCount != null){
+                fragmentView?.findViewById<TextView>(R.id.account_tv_following_count)?.text = followDTO?.followingCount?.toString()
+            }
+            if(followDTO?.followerCount != null){
+                fragmentView?.findViewById<TextView>(R.id.account_tv_fllow_count)?.text = followDTO?.followerCount?.toString()
+                if(followDTO?.followerCount != null){
+                    fragmentView?.findViewById<Button>(R.id.account_btn_follow_signout)?.text = getString(R.string.follow_cancel)
+                    fragmentView?.findViewById<Button>(R.id.account_btn_follow_signout)?.background?.setColorFilter(ContextCompat.getColor(activity!!,R.color.colorLightGray),PorterDuff.Mode.MULTIPLY)
+                }
+                else{
+                    if(uid != curruntUserUid){
+                        fragmentView?.findViewById<Button>(R.id.account_btn_follow_signout)?.text = getString(R.string.follow)
+                        fragmentView?.findViewById<Button>(R.id.account_btn_follow_signout)?.background?.colorFilter = null
+                    }
+                }
+            }
+
+        }
+    }
+
     fun requestFollow(){
-        //나의 계정 :
+        //상대방이 나한테
+
+        var tsDocFollowing = firestore?.collection("users")?.document(curruntUserUid!!)
+        firestore?.runTransaction{ transition ->
+            //runTransaction을 사용하지 않을경우 동시에 일어난 상황에 대처하지 못한다.
+            //사용자에게 따로따로 읽고 쓰기 권한을 주는것이라 생각하면 편함
+            //FollowDTO 캐스팅
+            var followDTO = transition.get(tsDocFollowing!!).toObject(FollowDTO::class.java)
+            if(followDTO == null){
+                followDTO = FollowDTO()
+                followDTO!!.followerCount = 1
+                //중복방지를 위해서 상대방 UID를 넣어준다.
+                followDTO!!.followers[uid!!] = true
+                //DB로 저장
+                transition.set(tsDocFollowing,followDTO)
+                //transaction 닫기
+                return@runTransaction
+            }
+
+            //내 계정에 팔로우가 안되어있는경우
+            //특정 키가 있는지 검사한다(followins에)
+            if(followDTO.followins.containsKey(uid))
+            {
+                //팔러워를 한명 줄인다.
+                followDTO?.followingCount = followDTO.followingCount-1
+                //팔로우를 끊어 준다.
+                followDTO?.followers?.remove(uid)
+
+            }
+            //내 계정에 팔로우가 되어있는경우
+            else{
+                //팔러워를 한명 늘린다.
+                followDTO?.followingCount = followDTO.followingCount+1
+                //팔로우 유저의 uid를 넘겨준다.
+                followDTO?.followers[uid!!] = true
+            }
+            //DB로 저장
+            transition.set(tsDocFollowing,followDTO)
+            //transaction 닫기
+            return@runTransaction
+        }
+
+        //----------------------------------------------------------------------------------------------------------
+
+        //내가 상대방한테!
+
+        var tsDocFollower = firestore?.collection("profileImages")?.document(uid!!)
+        firestore?.runTransaction{transition ->
+            //FollowDTO를 읽어온다. Follower라는 변수에 FollowDTO를 매핑해준거라 생각함 편함
+            var followDTO = transition.get(tsDocFollower!!).toObject(FollowDTO::class.java)
+            if(followDTO == null){
+                followDTO = FollowDTO()
+                followDTO!!.followerCount = 1
+                followDTO!!.followers[curruntUserUid!!] = true
+
+                transition.set(tsDocFollower,followDTO!!)
+                return@runTransaction
+            }
+
+            //내가 상대 계정에 팔로우를 했을경우
+            if(followDTO!!.followers.containsKey(curruntUserUid))
+            {
+                followDTO!!.followerCount  = followDTO!!.followerCount-1
+                followDTO!!.followers.remove(curruntUserUid!!)
+            }
+            //상대가 내 계정에 팔로우를 안했을경우
+            else
+            {
+                followDTO!!.followerCount  = followDTO!!.followerCount+1
+                followDTO!!.followers[curruntUserUid!!] = true
+            }
+
+            transition.set(tsDocFollower,followDTO!!)
+            return@runTransaction
+        }
+
+
     }
     fun getProfileImage(){
         firestore?.collection("profileImages")?.document(uid!!)?.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
@@ -108,7 +218,7 @@ class UserFragment : Fragment() {
                 for (snapshot in querySnapshot.documents) {
                     contentDTO.add(snapshot.toObject(ContentDTOs::class.java)!!)
                 }
-                //contentDTO값 받아와서 게시글 수 세
+                //contentDTO값 받아와서 게시글 수 세기
                 view?.findViewById<TextView>(R.id.account_tv_post_count)?.text = contentDTO.size.toString()
                 //리사이클러뷰 새로고침
                 notifyDataSetChanged()
