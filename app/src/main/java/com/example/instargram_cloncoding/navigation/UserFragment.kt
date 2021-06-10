@@ -80,8 +80,6 @@ class UserFragment : Fragment() {
 
 
         //프로필 사진 올리는부분
-        if(uid == curruntUserUid)
-        {
             fragmentView?.findViewById<ImageView>(R.id.content_iv_profile)?.setOnClickListener {
                 var photoPickerIntent = Intent(Intent.ACTION_PICK)
                 photoPickerIntent.type = "image/*"
@@ -89,7 +87,6 @@ class UserFragment : Fragment() {
             }
             getProfileImage()
             getFollowerAndFollowing()
-        }
         return fragmentView
     }
 
@@ -97,15 +94,17 @@ class UserFragment : Fragment() {
         firestore?.collection("users")?.document(uid!!)?.addSnapshotListener{documentSnapshot, firebaseFirestoreException ->
             if(documentSnapshot == null) return@addSnapshotListener
             var followDTO = documentSnapshot.toObject(FollowDTO::class.java)
-            if(followDTO?.followerCount != null){
+            if(followDTO?.followingCount != null){
                 fragmentView?.findViewById<TextView>(R.id.account_tv_following_count)?.text = followDTO?.followingCount?.toString()
             }
             if(followDTO?.followerCount != null){
                 fragmentView?.findViewById<TextView>(R.id.account_tv_fllow_count)?.text = followDTO?.followerCount?.toString()
-                if(followDTO?.followerCount != null){
+                //팔로워에 이미 있다면?!?!?
+                if(followDTO?.followers?.containsKey(curruntUserUid!!)){
                     fragmentView?.findViewById<Button>(R.id.account_btn_follow_signout)?.text = getString(R.string.follow_cancel)
                     fragmentView?.findViewById<Button>(R.id.account_btn_follow_signout)?.background?.setColorFilter(ContextCompat.getColor(activity!!,R.color.colorLightGray),PorterDuff.Mode.MULTIPLY)
                 }
+                //팔로워에 들어가있지 않다면?!??
                 else{
                     if(uid != curruntUserUid){
                         fragmentView?.findViewById<Button>(R.id.account_btn_follow_signout)?.text = getString(R.string.follow)
@@ -128,9 +127,9 @@ class UserFragment : Fragment() {
             var followDTO = transition.get(tsDocFollowing!!).toObject(FollowDTO::class.java)
             if(followDTO == null){
                 followDTO = FollowDTO()
-                followDTO!!.followerCount = 1
+                followDTO!!.followingCount = 1
                 //중복방지를 위해서 상대방 UID를 넣어준다.
-                followDTO!!.followers[uid!!] = true
+                followDTO!!.followins[uid!!] = true
                 //DB로 저장
                 transition.set(tsDocFollowing,followDTO)
                 //transaction 닫기
@@ -144,7 +143,7 @@ class UserFragment : Fragment() {
                 //팔러워를 한명 줄인다.
                 followDTO?.followingCount = followDTO.followingCount-1
                 //팔로우를 끊어 준다.
-                followDTO?.followers?.remove(uid)
+                followDTO?.followins?.remove(uid)
 
             }
             //내 계정에 팔로우가 되어있는경우
@@ -152,7 +151,7 @@ class UserFragment : Fragment() {
                 //팔러워를 한명 늘린다.
                 followDTO?.followingCount = followDTO.followingCount+1
                 //팔로우 유저의 uid를 넘겨준다.
-                followDTO?.followers[uid!!] = true
+                followDTO?.followins[uid!!] = true
             }
             //DB로 저장
             transition.set(tsDocFollowing,followDTO)
@@ -164,7 +163,7 @@ class UserFragment : Fragment() {
 
         //내가 상대방한테!
 
-        var tsDocFollower = firestore?.collection("profileImages")?.document(uid!!)
+        var tsDocFollower = firestore?.collection("users")?.document(uid!!)
         firestore?.runTransaction{transition ->
             //FollowDTO를 읽어온다. Follower라는 변수에 FollowDTO를 매핑해준거라 생각함 편함
             var followDTO = transition.get(tsDocFollower!!).toObject(FollowDTO::class.java)
@@ -211,6 +210,7 @@ class UserFragment : Fragment() {
 
         var contentDTO : ArrayList<ContentDTOs> = arrayListOf()
         init {
+            //UID값을 가져와서 자신이 올린 사진만 가져오게 설정함.
             firestore?.collection("images")?.whereEqualTo("uid", uid)?.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
                 if (querySnapshot == null) return@addSnapshotListener
 
