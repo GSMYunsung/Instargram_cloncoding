@@ -1,5 +1,6 @@
 package com.example.instargram_cloncoding.navigation
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -104,6 +105,14 @@ class DetailViewFragment : Fragment(){
                 userfragment.arguments = bundle
                 activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.main_content,userfragment)?.commit()
             }
+
+            //내가 선택한 사진의 UID값의 포지션이 넘어가면서 해당 댓글의 댓글창이 켜진다.
+            viewholder.findViewById<ImageView>(R.id.detailviewitem_comment_imageview).setOnClickListener { v ->
+                var intent = Intent(v.context,CommentActivity::class.java)
+                intent.putExtra("contextUid",contentUIDList[position])
+                startActivity(intent)
+            }
+
         }
         //RecyclerView로 만들어지는 item의 총 개수를 반환한다.
         override fun getItemCount(): Int {
